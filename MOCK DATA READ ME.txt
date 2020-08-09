@@ -1,0 +1,12 @@
+The mock data set contains random values for the number of crimes. 
+
+The format remains the exact same as the real data set. 
+
+Important to note:
+- the values are much higher in this mock data than in the real data
+- there are a lot more zeros in the real data, hence the methods chosen. 
+- due to the structure of the data, the total rows and columns will not 
+	equal the actual sums from the data as this was decided to be too 
+	time consuming to produce, however, as total rows are not used in the 
+	analysis this is not an issue for the mock data.The only limitation 
+	for the mock data is that you cannot confirm Python checks with the raw data. 
