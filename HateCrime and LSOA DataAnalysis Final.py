@@ -322,7 +322,7 @@ outliertruefalse.loc[melted_outlierstruefalse['LSOA'] =='E01000002']
 
 
 
-#%% join hate crime data to LSOA shapefile
+#%% join hate crime data to LSOA shapefile to make a geodataframe
 
 lsoa.crs
 list(finalhatedataset)
@@ -356,15 +356,18 @@ list(lsoa_2018pop)
 lsoa_2018pop_allage = lsoa_2018pop[['Area Codes', 'LSOA','LA (2019 boundaries)', 'All Ages']]
 list(lsoa_2018pop_allage)
 
-type(lsoa)
+type(lsoa_with_hatecrimes)
 type(lsoa_2018pop_allage)
 
 list(lsoa_with_hatecrimes)
 list(lsoa_2018pop_allage)
 
 lsoa_2018pop_allage
-#merge the existing LSOA and hate crime gdf with population  LSOA data. 
-lsoa_with_hatecrimes_and_pop = pd.merge(lsoa_with_hatecrimes,lsoa_2018pop_allage, how='outer', left_on='LSOA11CD', right_on='Area Codes')
+
+#merge the existing LSOA and hate crime gdf with population  LSOA data. Use left join to keep only LSOA's that are in London. 
+lsoa_with_hatecrimes_and_pop = pd.merge(lsoa_with_hatecrimes,lsoa_2018pop_allage, how='left', left_on='LSOA11CD', right_on='Area Codes')
+lsoa_with_hatecrimes_and_pop
+
 #check merged correctly
 list(lsoa_with_hatecrimes_and_pop) 
 
@@ -390,8 +393,6 @@ lsoa_with_hatecrimes_and_pop.sort_values(by=['All_HC_rate_p1000'], ascending=Fal
 #remove all white space in columns
 lsoa_with_hatecrimes_and_pop.columns = lsoa_with_hatecrimes_and_pop.columns.str.replace(' ', '_')
 
-list(lsoa_with_hatecrimes_and_all_data)
-type(lsoa_with_hatecrimes_and_all_data)
 
 #export final LSOA geodataframe to files for use in Arc. 
 lsoa_with_hatecrimes_and_pop.crs
