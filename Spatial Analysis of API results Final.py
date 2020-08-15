@@ -13,13 +13,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-#ANALYSIS
 from patsy import dmatrices
 import statsmodels.api as sm
-from statsmodels.formula.api import poisson
-from statsmodels.formula.api import negativebinomial
 import statsmodels.formula.api as smf
+
 
 
 #read in all the API results that had been saved
@@ -259,7 +256,43 @@ finalhatedata_nonNAN.to_file('C:/Users/tho84231/Documents/GitHub/Dissertation/Ou
 finalhatedata_nonNAN.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/LSOA_hate_data_and_Features_final_withoutNAN.csv')
 
 
-#%% SPATIAL ANALYSIS REGRESSION 
+#%%
+#Observed vs Expected analysis 
+
+finalhatedata_nonNAN = pd.read_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/LSOA_hate_data_and_Features_final_withoutNAN.csv')
+
+list(finalhatedata_nonNAN)
+
+#create observed - expected for anti semitic
+finalhatedata_nonNAN['AntiSem_Ob-Exp'] = finalhatedata_nonNAN['Anti_Semitic'] - finalhatedata_nonNAN['synagogues_count'] * (finalhatedata_nonNAN['Anti_Semitic'].sum() / finalhatedata_nonNAN['synagogues_count'].sum())
+
+#mosques and islamophobic
+finalhatedata_nonNAN['Islamophobic_Ob-Exp'] = finalhatedata_nonNAN['Islamophobic'] - finalhatedata_nonNAN['mosque_count'] * (finalhatedata_nonNAN['Islamophobic'].sum() / finalhatedata_nonNAN['mosque_count'].sum())
+
+#faith
+finalhatedata_nonNAN['Faith_Ob-Exp'] = finalhatedata_nonNAN['Faith'] - finalhatedata_nonNAN['faithfeatures_count'] * (finalhatedata_nonNAN['Faith'].sum() / finalhatedata_nonNAN['faithfeatures_count'].sum())
+
+
+#disabled 
+finalhatedata_nonNAN['Disabled_Ob-Exp'] = finalhatedata_nonNAN['Disability'] - finalhatedata_nonNAN['disabledfeatures_count'] * (finalhatedata_nonNAN['Disability'].sum() / finalhatedata_nonNAN['disabledfeatures_count'].sum())
+
+#Transgender 
+finalhatedata_nonNAN['Transgender_Ob-Exp'] = finalhatedata_nonNAN['Transgender'] - finalhatedata_nonNAN['trans_count'] * (finalhatedata_nonNAN['Transgender'].sum() / finalhatedata_nonNAN['trans_count'].sum())
+
+
+#homophobic and LGBT
+finalhatedata_nonNAN['Homophobic_Ob-Exp'] = finalhatedata_nonNAN['Homophobic'] - finalhatedata_nonNAN['lgbt_count'] * (finalhatedata_nonNAN['Homophobic'].sum() / finalhatedata_nonNAN['lgbt_count'].sum())
+
+
+
+#export and save for mapping
+finalhatedata_nonNAN.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/LSOA_hate_data_and_Features_final_withoutNAN_withObExp.csv')
+
+
+
+
+
+#%% Regression Analysis 
 #Read back in CSV for regression
 finalhatedata_nonNAN = pd.read_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/LSOA_hate_data_and_Features_final_withoutNAN.csv')
 
@@ -414,57 +447,6 @@ nb2_training_results_antisem = sm.GLM(y_train_antisem, X_train_antisem,family=sm
 print(nb2_training_results_antisem.summary())
 
 
-#%% poisson reg - FAITH PLACE VS FAITH RATE
-
-#get column names
-list(finalhatedata_nonNAN)
-
-
-#check the mean and variance 
-print('variance='+str(finalhatedata_nonNAN['Faith_p1000'].var()))
-print('mean='+str(finalhatedata_nonNAN['Faith_p1000'].mean()))
-
-#create train and test data frames. 
-mask_faith = np.random.rand(len(finalhatedata_nonNAN)) < 0.8
-train_faith = finalhatedata_nonNAN[mask_faith]
-test_faith = finalhatedata_nonNAN[~mask_faith]
-
-len(test_faith)
-len(train_faith)
-print('Training data set length='+str(len(train_faith)))
-print('Testing data set length='+str(len(test_faith)))
-
-list(finalhatedata_nonNAN)
-
-#set up the regression expression 
-expr_faith = """Faith_p1000 ~ faithfeatures_count"""
-
-#Set up the X and y matrices for the training and testing data sets.
-y_train_faith, X_train_faith = dmatrices(expr_faith, train_faith, return_type='dataframe')
-y_test_faith, X_test_faith = dmatrices(expr_faith, test_faith, return_type='dataframe')
-
-#train the model
-poisson_training_results_faith = sm.GLM(y_train_faith, X_train_faith, family=sm.families.Poisson()).fit()
-print(poisson_training_results_faith.summary())
-
-poisson_predictions_faith = poisson_training_results_faith.get_prediction(X_test_faith)
-#.summary_frame() returns a pandas DataFrame
-predictions_summary_frame_faith = poisson_predictions_faith.summary_frame()
-print(predictions_summary_frame_faith)
-
-
-
-
-#%%    ZIP MODEL FOR FAITH AND FAITH FEATURES
-
-#check zeros
-ax = sns.distplot(finalhatedata_nonNAN['Faith_p1000'])
-plt.title('Distribution of Faith rate')
-
-
-zip_training_results_faith = sm.ZeroInflatedPoisson(endog=y_train_faith, exog=X_train_faith, exog_infl=X_train_faith, inflation='logit').fit()
-
-print(zip_training_results_faith.summary())
 
 
 
@@ -687,6 +669,51 @@ NB_olsr_results_homophobic.tvalues
 nb2_training_results_homophobic = sm.GLM(y_train_homophobic, X_train_homophobic,family=sm.families.NegativeBinomial(alpha=NB_olsr_results_homophobic.params[0])).fit()
 print(nb2_training_results_homophobic.summary())
 
+#%% poisson reg - FAITH PLACE VS FAITH RATE
+
+#get column names
+list(finalhatedata_nonNAN)
+
+
+#check the mean and variance 
+print('variance='+str(finalhatedata_nonNAN['Faith_p1000'].var()))
+print('mean='+str(finalhatedata_nonNAN['Faith_p1000'].mean()))
+
+#create train and test data frames. 
+mask_faith = np.random.rand(len(finalhatedata_nonNAN)) < 0.8
+train_faith = finalhatedata_nonNAN[mask_faith]
+test_faith = finalhatedata_nonNAN[~mask_faith]
+
+len(test_faith)
+len(train_faith)
+print('Training data set length='+str(len(train_faith)))
+print('Testing data set length='+str(len(test_faith)))
+
+list(finalhatedata_nonNAN)
+
+#set up the regression expression 
+expr_faith = """Faith_p1000 ~ faithfeatures_count"""
+
+#Set up the X and y matrices for the training and testing data sets.
+y_train_faith, X_train_faith = dmatrices(expr_faith, train_faith, return_type='dataframe')
+y_test_faith, X_test_faith = dmatrices(expr_faith, test_faith, return_type='dataframe')
+
+#train the model
+poisson_training_results_faith = sm.GLM(y_train_faith, X_train_faith, family=sm.families.Poisson()).fit()
+print(poisson_training_results_faith.summary())
+
+
+
+#%%    ZIP MODEL FOR FAITH AND FAITH FEATURES
+
+#check zeros
+ax = sns.distplot(finalhatedata_nonNAN['Faith_p1000'])
+plt.title('Distribution of Faith rate')
+
+
+zip_training_results_faith = sm.ZeroInflatedPoisson(endog=y_train_faith, exog=X_train_faith, exog_infl=X_train_faith, inflation='logit').fit()
+
+print(zip_training_results_faith.summary())
 
 
 
