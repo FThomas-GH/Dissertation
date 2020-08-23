@@ -15,12 +15,17 @@ import seaborn as sns
 
 #read in LSOA boundary file from London data store
 lsoa = gpd.read_file('C:/Users/tho84231/Documents/GitHub/Dissertation/statistical-gis-boundaries-london/ESRI/LSOA_2011_London_gen_MHW.shp')
-#check coordinate reference system. LSOA imported as BNG need to convert to WGS84 for Google. 
+#check coordinate reference system. 
 lsoa.crs
+#confirm as BNG
+lsoa.crs = {'init' :'epsg:27700'}
+lsoa.crs
+#LSOA imported as BNG need to convert to WGS84 for Google. 
 #re-project data into WGS84
-lsoa = lsoa.to_crs({'init': 'epsg:4326'})
+lsoa = lsoa.to_crs("EPSG:4326")
 #checks
 lsoa.crs
+
 list(lsoa.columns)
 type(lsoa)
 

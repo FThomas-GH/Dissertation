@@ -19,7 +19,9 @@ import time
 
 #this reads in of boroughs data file downloaded from london data store.
 boroughs = gpd.read_file('C:/Users/tho84231/Documents/GitHub/Dissertation/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp')
-#the initial file is in british national grid. 
+#check CRS
+boroughs.crs
+#confirm as BNG
 boroughs.crs = {'init' :'epsg:27700'}
 boroughs.crs
 #convert british national grid to wgs84
