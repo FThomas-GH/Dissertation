@@ -10,20 +10,22 @@ Created on Sun May 10 09:59:05 2020
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#from scipy import stats
 
 
 #read in LSOA boundary file from London data store
-lsoa = gpd.read_file('C:/Users/tho84231/Documents/GitHub/Dissertation/statistical-gis-boundaries-london/ESRI/LSOA_2011_London_gen_MHW.shp')
+lsoa = gpd.read_file('/Users/freddythomas/Documents/GitHub/DissertationFork/statistical-gis-boundaries-london/ESRI/LSOA_2011_London_gen_MHW.shp')
 #check coordinate reference system. LSOA imported as BNG need to convert to WGS84 for Google. 
 lsoa.crs
 #set CRS from the data. 
+#not needed the following
 lsoa = gpd.GeoDataFrame(lsoa,geometry='geometry',crs={'init':'epsg:27700'})
+lsoa.crs
 #re-project data into WGS84
 lsoa = lsoa.to_crs("EPSG:4326")
-
+lsoa = lsoa.to_crs({'init': 'epsg:4326'})
 #checks
 lsoa.crs
 list(lsoa.columns)
@@ -31,7 +33,7 @@ type(lsoa)
 
 #%%
 #read in the entire excel workbook with multple sheets. 
-crimes_wb = pd.ExcelFile('C:/Users/tho84231/Documents/GitHub/Dissertation/MockData.xlsx')
+crimes_wb = pd.ExcelFile('/Users/freddythomas/Documents/GitHub/DissertationFork/MockData.xlsx')
 
 #get list of sheet names to parse all sheets into data frames to then be merged. 
 crimes_wb_sheetnames = crimes_wb.sheet_names
@@ -99,7 +101,7 @@ df.tail(40)
 
 
 #save. 
-df.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/allhatecrimesmerged.csv')
+df.to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/allhatecrimesmerged.csv')
 print(type(df))
 
 
@@ -140,7 +142,7 @@ totalhatecrimesLSOA_by_type_clean['Total All Incidents'] = totalhatecrimesLSOA_b
 totalhatecrimesLSOA_by_type_clean.head()
 
 #export to csv to save it and reset index so lsoa column is still maintained. 
-totalhatecrimesLSOA_by_type_clean.reset_index().to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/lsoa_and_hatecrimes_clean.csv')
+totalhatecrimesLSOA_by_type_clean.reset_index().to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/lsoa_and_hatecrimes_clean.csv')
 
 
 
@@ -183,7 +185,7 @@ list(totalhatecrimesLSOA_by_type_clean)
 #replace NaN values with 0's for analysis. 
 totalhatecrimesLSOA_by_type_clean_nonNAN = totalhatecrimesLSOA_by_type_clean.replace(np.nan,0)
 
-totalhatecrimesLSOA_by_type_clean_nonNAN.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/totalhatecrimesLSOA_by_type_clean_noNAN.csv')
+totalhatecrimesLSOA_by_type_clean_nonNAN.to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/totalhatecrimesLSOA_by_type_clean_noNAN.csv')
 
 
 
@@ -196,7 +198,7 @@ list(totalhatecrimesLSOA_by_type_clean_nonNAN)
 
 hatecrimes_describe = totalhatecrimesLSOA_by_type_clean_nonNAN.describe()
 hatecrimes_describe
-hatecrimes_describe.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/hatecrimes_clean_describe.csv')
+hatecrimes_describe.to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/hatecrimes_clean_describe.csv')
 
 
 #boxplot everything
@@ -205,33 +207,33 @@ list(totalhatecrimesLSOA_by_type_clean_nonNAN)
 #box plot all hate crimes together. 
 ax = sns.boxplot(data=totalhatecrimesLSOA_by_type_clean_nonNAN, orient="h", palette="Set2")
 ax.figsize=(30,30)
-ax.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/BoxPlotofAll.png')
+ax.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/BoxPlotofAll.png')
 
 
 #closer inspection of all box plots
 AS_bp = sns.boxplot(x='Anti Semitic', data=totalhatecrimesLSOA_by_type_clean_nonNAN)
 AS_bp.set_title('Boxplot for Anti Semitic Hate Crime')
 AS_bp.figure.figsize=(15,15)
-AS_bp.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/AS_bp.png')
+AS_bp.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/AS_bp.png')
 
 
 D_bp = sns.boxplot(x='Disability', data=totalhatecrimesLSOA_by_type_clean_nonNAN)
 D_bp.set_title('Boxplot for Disability Hate Crime')
 D_bp.figure.figsize=(15,15)
-D_bp.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/D_bp.png')
+D_bp.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/D_bp.png')
 
 
 F_bp = sns.boxplot(x='Faith', data=totalhatecrimesLSOA_by_type_clean_nonNAN)
 F_bp.set_title('Boxplot for Faith Hate Crime')
 F_bp.figure.figsize=(15,15)
-F_bp.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/F_bp.png')
+F_bp.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/F_bp.png')
 
 
 
 H_bp = sns.boxplot(x='Homophobic', data=totalhatecrimesLSOA_by_type_clean_nonNAN)
 H_bp.set_title('Boxplot for Homophobic Hate Crime')
 H_bp.figure.figsize=(15,15)
-H_bp.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/H_bp.png')
+H_bp.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/H_bp.png')
 
 
 #check correlations
@@ -241,7 +243,7 @@ matrix = np.triu(correlations)
 sns.heatmap(correlations, annot=True, mask=matrix)
 
 hatecrimecor = sns.heatmap(correlations, annot=True, cmap='GnBu', square=True)
-hatecrimecor.figure.savefig('C:/Users/tho84231/Documents/GitHub/Dissertation/HatecrimeCorr.png')
+hatecrimecor.figure.savefig('/Users/freddythomas/Documents/GitHub/DissertationFork/HatecrimeCorr.png')
 
 
 
@@ -280,7 +282,7 @@ finalhatedataset
 #rename columns for graph
 finalhatedataset.rename(columns={"Anti_Semitic": "Anti-Semitic",'Faith_noIslamAntiSem':'Faith'}, inplace=True)
 finalhatedataset.sum()
-finalhatedataset.reset_index().to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/FinalHateCrimeDataset.csv')
+finalhatedataset.reset_index().to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/FinalHateCrimeDataset.csv')
 
 #scatterplot and distbrution plot for all variables together
 #pair plot. 
@@ -312,7 +314,7 @@ print(IQR_df < (Q1 - 1.5 * iqr )) or (IQR_df > (Q3 + 1.5 * iqr))
 
 outliertruefalse = print(IQR_df < (Q1 - 1.5 * iqr )) or (IQR_df > (Q3 + 1.5 * iqr))
 outliertruefalse = outliertruefalse.reset_index()
-outliertruefalse.to_csv('C:/Users/tho84231/Documents/GitHub/Dissertation/outliers_truefalse.csv')
+outliertruefalse.to_csv('/Users/freddythomas/Documents/GitHub/DissertationFork/outliers_truefalse.csv')
 
 
 #check there is a row for an LSOA for each hate crime type
@@ -333,15 +335,15 @@ lsoa_with_hatecrimes = pd.merge(lsoa,finalhatedataset, how='outer', left_on='LSO
 lsoa_with_hatecrimes.columns
 
 #save as shapefile and  geojson 
-lsoa_with_hatecrimes.to_file('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/lsoa_with_hatecrime.shp')
-lsoa_with_hatecrimes.to_file('C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/lsoa_with_hatecrime.geojson', driver='GeoJSON')
+lsoa_with_hatecrimes.to_file('/Users/freddythomas/Documents/GitHub/DissertationFork/Output_Layers/lsoa_with_hatecrime.shp')
+lsoa_with_hatecrimes.to_file('/Users/freddythomas/Documents/GitHub/DissertationFork/Output_Layers/lsoa_with_hatecrime.geojson', driver='GeoJSON')
 
 
 
 
 #%% add in population for 2018
 
-lsoa_2018pop = pd.read_excel('C:/Users/tho84231/Documents/GitHub/Dissertation/LSOA 2018pop estimates/SAPE21DT1a-mid-2018-on-2019-LA-lsoa-syoa-estimates-formatted.xlsx', sheet_name='Mid-2018 Persons', skiprows=3)
+lsoa_2018pop = pd.read_excel('/Users/freddythomas/Documents/GitHub/DissertationFork/LSOA 2018pop estimates/SAPE21DT1a-mid-2018-on-2019-LA-lsoa-syoa-estimates-formatted.xlsx', sheet_name='Mid-2018 Persons', skiprows=3)
 lsoa_2018pop.head()
 
 #rename first row to be column headers and drop the first row from the data 
@@ -396,6 +398,6 @@ lsoa_with_hatecrimes_and_pop.columns = lsoa_with_hatecrimes_and_pop.columns.str.
 
 #export final LSOA geodataframe to files for use in Arc. 
 lsoa_with_hatecrimes_and_pop.crs
-lsoa_with_hatecrimes_and_pop.to_csv("C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/lsoa_with_hatecrime_and_population.csv")
-lsoa_with_hatecrimes_and_pop.to_file("C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/lsoa_with_hatecrime_and_population.shp")
-lsoa_with_hatecrimes_and_pop.to_file("C:/Users/tho84231/Documents/GitHub/Dissertation/Output_Layers/lsoa_with_hatecrime_and_population.geojson", driver='GeoJSON')
+lsoa_with_hatecrimes_and_pop.to_csv("/Users/freddythomas/Documents/GitHub/DissertationFork/Output_Layers/lsoa_with_hatecrime_and_population.csv")
+lsoa_with_hatecrimes_and_pop.to_file("/Users/freddythomas/Documents/GitHub/DissertationFork/Output_Layers/lsoa_with_hatecrime_and_population.shp")
+lsoa_with_hatecrimes_and_pop.to_file("/Users/freddythomas/Documents/GitHub/DissertationFork/Output_Layers/lsoa_with_hatecrime_and_population.geojson", driver='GeoJSON')
