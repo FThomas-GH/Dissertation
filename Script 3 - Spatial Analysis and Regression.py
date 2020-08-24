@@ -414,11 +414,6 @@ y_test_antisem, X_test_antisem = dmatrices(expr_antisem, test_antisem, return_ty
 poisson_training_results_antisem = sm.GLM(y_train_antisem, X_train_antisem, family=sm.families.Poisson()).fit()
 print(poisson_training_results_antisem.summary())
 
-poisson_predictions_antisem = poisson_training_results_antisem.get_prediction(X_test_antisem)
-#.summary_frame() returns a pandas DataFrame
-predictions_summary_frame_antisem = poisson_predictions_antisem.summary_frame()
-print(predictions_summary_frame_antisem)
-
 
 #%% NEGATIVE BINOMIAL - Synagogues VS ANTI SEMETIC HATE CRIME
 
